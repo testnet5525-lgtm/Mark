@@ -1,109 +1,37 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Переход в TikTok...</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #010101;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: white;
-            text-align: center;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #fe2c55; /* Цвет TikTok */
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        h1 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        p {
-            color: #ccc;
-            font-size: 0.9rem;
-            margin-bottom: 30px;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: #fe2c55;
-            color: white;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 15px rgba(254, 44, 85, 0.4);
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="loader"></div>
-        <h1>Открываем TikTok</h1>
-        <p>Если приложение не открылось автоматически,<br>нажмите кнопку ниже:</p>
+<script>
+    function openTikTok() {
+        const tiktokUser = "mark_space1";
+        // Чистый никнейм без @ для схем
+        const username = "mark_space1"; 
+        // Полная веб-ссылка для отката
+        const webUrl = "https://www.tiktok.com/@" + username + "?_r=1&_t=ZS-95MMs28gans";
         
-        <!-- Прямая ссылка на профиль -->
-        <a href="snssdk1233://user/profile/mark_space1" id="openBtn" class="btn">ОТКРЫТЬ ПРИЛОЖЕНИЕ</a>
-    </div>
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
 
-    <script>
-        const appUrl = "snssdk1233://user/profile/mark_space1";
-        const webUrl = "https://www.tiktok.com/@mark_space1?_r=1&_t=ZS-95MMs28gans";
-
-        // Функция попытки открытия приложения
-        function tryOpenApp() {
-            // Попытка вызвать протокол приложения
-            window.location.replace(appUrl);
-
-            // Если через 2 секунды ничего не произошло (приложение не установлено), 
-            // перенаправляем на веб-версию
-            setTimeout(function() {
-                window.location.replace(webUrl);
-            }, 2500);
+        // 1. Попытка для Android
+        if (/android/i.test(ua)) {
+            const intentUrl = "intent://www.tiktok.com/@" + username + "#Intent;package=com.zhiliaoapp.musically;scheme=https;end";
+            window.location.href = intentUrl;
+        } 
+        // 2. Попытка для iOS (iPhone/iPad)
+        else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+            const iosUrl = "snssdk1233://user/profile/" + username;
+            window.location.replace(iosUrl);
+        } 
+        // 3. Для ПК или других систем
+        else {
+            window.location.replace(webUrl);
         }
 
-        // Запуск при загрузке страницы
-        window.onload = tryOpenApp;
-
-        // Обработка клика по кнопке (на случай блокировки скрипта)
-        document.getElementById('openBtn').addEventListener('click', function(e) {
-            // Если snssdk не сработает, кнопка все равно отправит по ссылке в href
-            setTimeout(() => {
+        // Запасной вариант: если через 2.5 сек мы все еще на этой странице, 
+        // значит приложение не открылось — отправляем в браузер.
+        setTimeout(function() {
+            if (!document.hidden) {
                 window.location.href = webUrl;
-            }, 500);
-        });
-    </script>
-</body>
-</html>
+            }
+        }, 2500);
+    }
+
+    // Запускаем при загрузке
+    window.onload = openTikTok;
+</script>
